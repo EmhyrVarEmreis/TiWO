@@ -1,0 +1,11 @@
+*.iml
+*/.idea/*
+*/nbproject/*
+*/target/*
+*.log
+*.toc
+*.aux
+*.gz
+*/docs/*.pdf
+*/bower_components/*
+/tiwo/nbproject/private/
