@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+ "-//Hibernate/Hibernate Mapping DTD//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name="model.Product" table="product">
+      <meta attribute="class-description">
+         This class contains the product detail. 
+      </meta>
+      <id name="id" column="id">
+         <generator class="increment"/>
+      </id>
+      <property name="name" column="name" type="string"/>
+      <property name="price" column="price" type="double"/>
+   </class>
+</hibernate-mapping>
