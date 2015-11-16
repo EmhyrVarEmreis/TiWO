@@ -1,5 +1,6 @@
 package dao;
 
+import model.CRUDOperationException;
 import model.Product;
 import model.Shop;
 
@@ -11,10 +12,9 @@ import static org.junit.Assert.assertNull;
 public class ShopCRUDTest extends AbstractCRUDTest {
 
     private ShopDao shopDao = new ShopDao();
-    ProductDao productDao = new ProductDao();
 
     @Override
-    public void saveGetDeleteTest() {
+    public void saveGetDeleteTest() throws CRUDOperationException {
         int setSize = 2;
 
         //Save
@@ -56,16 +56,12 @@ public class ShopCRUDTest extends AbstractCRUDTest {
 
     private Set<Product> createProducts(int size) {
         Set<Product> products = new HashSet();
-
         for (int i = 0; i < size; i++) {
             Product p = new Product();
             p.setName("name");
             p.setPrice(1.3);
-            Long id = productDao.save(p);
-            p = productDao.get(id);
             products.add(p);
         }
-
         return products;
     }
 }

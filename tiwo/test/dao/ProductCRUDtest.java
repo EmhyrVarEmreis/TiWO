@@ -5,6 +5,7 @@
  */
 package dao;
 
+import model.CRUDOperationException;
 import model.Product;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ public class ProductCRUDtest extends AbstractCRUDTest {
     private ProductDao productDao = new ProductDao();
 
     @Test
-    public void saveGetDeleteTest() {
+    public void saveGetDeleteTest() throws CRUDOperationException {
         //Save
         Product product = createObject();
         Long id = productDao.save(product);

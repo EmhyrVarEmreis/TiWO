@@ -3,6 +3,7 @@ package dao;
 import java.util.LinkedList;
 import java.util.List;
 
+import model.CRUDOperationException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -26,7 +27,7 @@ public abstract class AbstractCRUD<T> {
         factory = configuration.buildSessionFactory(ssrb.build());
     }
 
-    public Long save(T object) {
+    public Long save(T object) throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;
         Long id = null;
@@ -38,14 +39,14 @@ public abstract class AbstractCRUD<T> {
             if (tx != null) {
                 tx.rollback();
             }
-            e.printStackTrace();
+            throw new CRUDOperationException("CRUD Save operation not successful", e);
         } finally {
             session.close();
         }
         return id;
     }
 
-    public List list() {
+    public List list() throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;
         List objects = new LinkedList();
@@ -57,14 +58,14 @@ public abstract class AbstractCRUD<T> {
             if (tx != null) {
                 tx.rollback();
             }
-            e.printStackTrace();
+            throw new CRUDOperationException("CRUD List operation not successful", e);
         } finally {
             session.close();
         }
         return objects;
     }
 
-    public void update(T object) {
+    public void update(T object) throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;
         try {
@@ -75,13 +76,13 @@ public abstract class AbstractCRUD<T> {
             if (tx != null) {
                 tx.rollback();
             }
-            e.printStackTrace();
+            throw new CRUDOperationException("CRUD Update operation not successful", e);
         } finally {
             session.close();
         }
     }
 
-    public void delete(T object) {
+    public void delete(T object) throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;
         try {
@@ -92,13 +93,13 @@ public abstract class AbstractCRUD<T> {
             if (tx != null) {
                 tx.rollback();
             }
-            e.printStackTrace();
+            throw new CRUDOperationException("CRUD Delete operation not successful", e);
         } finally {
             session.close();
         }
     }
 
-    public T get(Long id) {
+    public T get(Long id) throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;
         T returned = null;
@@ -110,7 +111,7 @@ public abstract class AbstractCRUD<T> {
             if (tx != null) {
                 tx.rollback();
             }
-            e.printStackTrace();
+            throw new CRUDOperationException("CRUD Get operation not successful", e);
         } finally {
             session.close();
         }
