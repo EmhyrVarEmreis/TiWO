@@ -9,10 +9,10 @@ public abstract class AbstractCRUDTest<T> {
     public abstract void saveGetDeleteTest() throws CRUDOperationException;
 
     @Test
-    public abstract void saveListDeleteTest();
+    public abstract void saveListDeleteTest() throws CRUDOperationException;
 
     @Test
-    public abstract void saveUpdateGetDeleteTest();
+    public abstract void saveUpdateGetDeleteTest() throws CRUDOperationException;
 
     protected abstract T createObject();
 
