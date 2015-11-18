@@ -8,6 +8,8 @@ package dao;
 import model.CRUDOperationException;
 import model.Product;
 import org.junit.Test;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -33,11 +35,32 @@ public class ProductCRUDtest extends AbstractCRUDTest {
 
     @Override
     public void saveListDeleteTest() {
+       
+        //Save
+        
+        //Delete
 
     }
 
     @Override
-    public void saveUpdateGetDeleteTest() {
+    public void saveUpdateGetDeleteTest()throws CRUDOperationException {
+        
+        //Save
+        Product product = createObject();
+        Long id = productDao.save(product); 
+        
+        //Update
+        productDao.update(product);
+        
+        //Get
+        Product fromDb = productDao.get(id);
+        validate(product, fromDb);
+        
+        //Delete
+        productDao.delete(fromDb);
+        fromDb = productDao.get(id);
+        
+        assertNull(fromDb);
 
     }
 
