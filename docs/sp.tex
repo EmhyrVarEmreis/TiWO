@@ -10,7 +10,7 @@
 \hyphenation{FreeBSD}
 
 \author{Mateusz Bocheński\\Paweł Kłapsa\\Jacek Kozieja\\Mateusz Stefaniak}
-\title{Testowanie i weryfikacja oprogramowania - projekt zespołowy}
+\title{Testowanie i weryfikacja oprogramowania \\ {\small Projekt 1 - Baza danych}}
 \date{\today}
 
 \linespread{1.3}
@@ -21,10 +21,31 @@
 \maketitle
 \tableofcontents
 
-\section{Cel ćwiczenia}
-
+\section{Wstęp}
+Celem projektu byłu przetestowanie operacji CRUD (Create, Read, Update, Delete) w autorskiej aplikacji Java, porozumiewającej się z bazą danych MySQL przy pomocy frameworka Hibernate. Aplikacja przetwarza dane dotyczące sklepów i znajdujących się weń produktów.
 \section{Testy}
+\subsection{Plan testów}
+Testy miały obejmować zapis nowego obiektu w bazie danych, nadpisanie go, odczytanie i usunięcie. Przetestowano działanie metod dla:
+\begin{itemize}
+  \item poprawnych danych
+  \item danych niezgodnych z formatem
+  \item danych nie mapowanych do obiektów poprzez Hibernate
+  \item danych o niepoprawnym ID (już występującym)
+\end{itemize}
+
+\subsection{Projekt i wykonanie testów}
+Utworzone zostały klasy testowe: ShopCRUDTest, ProductCRUDTest oraz klasa abstrakcyjna AbstractCRUDTest<T>. Powstały metody testowe:
+\begin{itemize}
+  \item saveGetDeleteTest()
+  \item saveListDeleteTest()
+  \item saveUpdateGetDeleteTest()
+\end{itemize}
+
+\begin{footnotesize}\begin{verbatim}
+---Tutaj będzie kod źródłowy i komentarze
+\end{verbatim}\end{footnotesize}
 
 \section{Wnioski}
+Testy wykazały
 
 \end{document}
