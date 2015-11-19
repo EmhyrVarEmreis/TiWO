@@ -27,6 +27,12 @@ public abstract class AbstractCRUD<T> {
         factory = configuration.buildSessionFactory(ssrb.build());
     }
 
+    public void saveAll(List<T> list) throws CRUDOperationException {
+        for (T o : list) {
+            save(o);
+        }
+    }
+    
     public Long save(T object) throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;

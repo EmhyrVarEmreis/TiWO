@@ -42,6 +42,7 @@ public class ProductCRUDtest extends AbstractCRUDTest {
         list.add(createObject());
         
         //Save list   
+        productDao.saveAll(list);
         
         //Get list
         List<Product> listFromDb = new LinkedList<Product>();
