@@ -2,10 +2,6 @@ package model;
 
 import java.util.Set;
 
-/**
- *
- * @author Paweł Kłapsa
- */
 public class Shop {
 
     private Long id;

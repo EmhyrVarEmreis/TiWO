@@ -2,10 +2,6 @@ package dao;
 
 import model.Product;
 
-/**
- *
- * @author Paweł Kłapsa
- */
 public class ProductDao extends AbstractCRUD<Product> {
 
     public ProductDao() {

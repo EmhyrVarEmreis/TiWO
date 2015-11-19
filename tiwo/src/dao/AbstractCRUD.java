@@ -10,9 +10,6 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-/**
- * @author Paweł Kłapsa
- */
 public abstract class AbstractCRUD<T> {
 
     private static SessionFactory factory;

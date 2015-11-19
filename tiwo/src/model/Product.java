@@ -1,9 +1,5 @@
 package model;
 
-/**
- *
- * @author Paweł Kłapsa
- */
 public class Product {
 
     private Long id;
