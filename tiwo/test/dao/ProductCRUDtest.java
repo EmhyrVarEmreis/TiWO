@@ -34,11 +34,20 @@ public class ProductCRUDtest extends AbstractCRUDTest {
     }
 
     @Override
-    public void saveListDeleteTest() {
+    public void saveListDeleteTest() throws CRUDOperationException{
        
-        //Save
+        List<Product> list = new LinkedList<Product>(); 
+        list.add(createObject());
+        list.add(createObject());
+        list.add(createObject());
         
-        //Delete
+        //Save list   
+        
+        //Get list
+        List<Product> listFromDb = new LinkedList<Product>();
+        listFromDb = productDao.list();
+     
+        //Delete list
 
     }
 
@@ -49,12 +58,21 @@ public class ProductCRUDtest extends AbstractCRUDTest {
         Product product = createObject();
         Long id = productDao.save(product); 
         
-        //Update
-        productDao.update(product);
-        
         //Get
         Product fromDb = productDao.get(id);
         validate(product, fromDb);
+        
+        //Update
+        Product product2 = createObject();
+        product2.setName("Updated_name");
+        product2.setPrice(2.7);
+        product.setName("Updated_name");
+        product.setPrice(2.7);
+        productDao.update(product);
+        
+        //Get after update
+        fromDb = productDao.get(id);
+        validate(product2, fromDb);
         
         //Delete
         productDao.delete(fromDb);
