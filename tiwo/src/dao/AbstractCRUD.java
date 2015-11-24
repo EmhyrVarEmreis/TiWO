@@ -1,5 +1,7 @@
 package dao;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,10 +26,12 @@ public abstract class AbstractCRUD<T> {
         factory = configuration.buildSessionFactory(ssrb.build());
     }
 
-    public void saveAll(List<T> list) throws CRUDOperationException {
-        for (T o : list) {
-            save(o);
+    public ArrayList<Long> saveAll(List<T> list) throws CRUDOperationException {
+        ArrayList<Long> IdList= new ArrayList<Long>();
+        for (int i =0; i<list.size(); i++) {
+            IdList.add(save(list.get(i)));
         }
+        return IdList;
     }
     
     public Long save(T object) throws CRUDOperationException {
@@ -100,6 +104,16 @@ public abstract class AbstractCRUD<T> {
         } finally {
             session.close();
         }
+    }
+    
+    public void deleteAll(List<T> list, ArrayList<Long> idList) throws CRUDOperationException{
+//        for (Iterator<T> iter = list.listIterator(); iter.hasNext();){
+//            T p = iter.next();
+//            if (idList.contains(p.getId())) {
+//                System.out.print ("Znaleziony: ");
+//                System.out.println(p.getId());
+//            }
+//        } 
     }
 
     public T get(Long id) throws CRUDOperationException {
