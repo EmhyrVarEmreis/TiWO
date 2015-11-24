@@ -5,6 +5,8 @@
  */
 package dao;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import model.CRUDOperationException;
 import model.Product;
 import org.junit.Test;
@@ -42,14 +44,20 @@ public class ProductCRUDtest extends AbstractCRUDTest {
         list.add(createObject());
         
         //Save list   
-        productDao.saveAll(list);
-        
+        ArrayList<Long> idList = new ArrayList<Long>();
+        idList = productDao.saveAll(list);      
+
         //Get list
         List<Product> listFromDb = new LinkedList<Product>();
         listFromDb = productDao.list();
-     
-        //Delete list
 
+        //Delete list
+        for (Iterator<Product> iter = listFromDb.listIterator(); iter.hasNext();){
+            Product P = iter.next();
+            if (idList.contains(P.getId())) {
+                productDao.delete(P);
+            }
+        }
     }
 
     @Override
