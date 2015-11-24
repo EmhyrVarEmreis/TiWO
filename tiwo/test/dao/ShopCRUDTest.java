@@ -52,23 +52,26 @@ public class ShopCRUDTest extends AbstractCRUDTest {
         validate(shop, fromDb);
         
         //Update
-        shop.setName("newShopName");
-        Shop shop2 = createObject();
-        shop2.setName("newShopName");
-        shop2.setProducts(products);
+        shop.setName("NewShopName");
+        for (Product P : products){
+            P.setName("New_name");
+            P.setPrice(2.7);
+        }
+        shop.setProducts(products);
         shopDao.update(shop);
+        
+        Shop shop2 = createObject();
+        shop2.setName("NewShopName");
+        shop2.setProducts(products);
         
         //Get after update
         fromDb = shopDao.get(id);
         validate(shop2,fromDb);
-      
-        
+           
         //Delete
         shopDao.delete(fromDb);
         fromDb = shopDao.get(id);
         assertNull(fromDb);
-
-
     }
 
     @Override
