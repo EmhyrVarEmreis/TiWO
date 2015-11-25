@@ -45,19 +45,26 @@ public class ProductCRUDtest extends AbstractCRUDTest {
         
         //Save list   
         ArrayList<Long> idList = new ArrayList<Long>();
-        idList = productDao.saveAll(list);      
+        idList = productDao.saveAll(list); 
 
         //Get list
         List<Product> listFromDb = new LinkedList<Product>();
         listFromDb = productDao.list();
+        
+        assertEquals(list.size()+5,listFromDb.size());
 
         //Delete list
         for (Iterator<Product> iter = listFromDb.listIterator(); iter.hasNext();){
-            Product P = iter.next();
-            if (idList.contains(P.getId())) {
-                productDao.delete(P);
+            Product p = iter.next();
+            if (idList.contains(p.getId())) {
+                productDao.delete(p);
             }
         }
+        Product fromDb;
+        for (int i=0; i<idList.size();i++){
+            fromDb = productDao.get(idList.get(i));
+            assertNull(fromDb);
+        }   
     }
 
     @Override
@@ -66,8 +73,8 @@ public class ProductCRUDtest extends AbstractCRUDTest {
         //Save
         Product product = createObject();
         Long id = productDao.save(product); 
-        
-        //Get
+         
+       //Get
         Product fromDb = productDao.get(id);
         validate(product, fromDb);
         
