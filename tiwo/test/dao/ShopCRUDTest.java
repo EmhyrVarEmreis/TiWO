@@ -16,6 +16,11 @@ public class ShopCRUDTest extends AbstractCRUDTest {
     @Override
     public void saveGetDeleteTest() throws CRUDOperationException {
         int setSize = 2;
+        
+        List<Shop> list = new LinkedList<Shop>(); 
+        list.add(createObject());
+        list.add(createObject());
+        list.add(createObject());
 
         //Save
         Set<Product> products = createProducts(setSize);
@@ -34,7 +39,41 @@ public class ShopCRUDTest extends AbstractCRUDTest {
     }
 
     @Override
-    public void saveListDeleteTest() {
+    public void saveListDeleteTest() throws CRUDOperationException{
+        int setSize = 2;
+        
+        List<Shop> list = new LinkedList<Shop>(); 
+        list.add(createObject());
+        list.add(createObject());
+        list.add(createObject());
+        
+        Set<Product> products = createProducts(setSize);
+        for (Shop s : list){
+            s.setProducts(products);
+        }
+        
+        //Save list
+        LinkedList<Long> idList = new LinkedList<Long>();
+        idList = shopDao.saveAll(list); 
+        
+        //Get list
+        List<Shop> listFromDb = new LinkedList<Shop>();
+        listFromDb = shopDao.list();
+        
+        assertEquals(list.size()+2,listFromDb.size());
+  
+        //Delete list
+        for (Iterator<Shop> iter = listFromDb.listIterator(); iter.hasNext();){
+            Shop p = iter.next();
+            if (idList.contains(p.getId())) {
+                shopDao.delete(p);
+            }
+        }
+        Shop fromDb;
+        for (int i=0; i<idList.size();i++){
+            fromDb = shopDao.get(idList.get(i));
+            assertNull(fromDb);
+        }         
     }
 
     @Override
