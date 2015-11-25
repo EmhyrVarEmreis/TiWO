@@ -105,16 +105,6 @@ public abstract class AbstractCRUD<T> {
             session.close();
         }
     }
-    
-    public void deleteAll(List<T> list, ArrayList<Long> idList) throws CRUDOperationException{
-//        for (Iterator<T> iter = list.listIterator(); iter.hasNext();){
-//            T p = iter.next();
-//            if (idList.contains(p.getId())) {
-//                System.out.print ("Znaleziony: ");
-//                System.out.println(p.getId());
-//            }
-//        } 
-    }
 
     public T get(Long id) throws CRUDOperationException {
         Session session = factory.openSession();
