@@ -44,7 +44,7 @@ public class ProductCRUDtest extends AbstractCRUDTest {
         list.add(createObject());
         
         //Save list   
-        ArrayList<Long> idList = new ArrayList<Long>();
+        LinkedList<Long> idList = new LinkedList<Long>();
         idList = productDao.saveAll(list); 
 
         //Get list
