@@ -49,9 +49,9 @@ public class ProductCRUDtest extends AbstractCRUDTest {
 
         //Get list
         List<Product> listFromDb = productDao.list();
+        assertEquals(list.size(), listFromDb.size());
 
         //Delete list
-        assertEquals(list.size(), listFromDb.size());
         for (Product p : list) {
             if (idList.contains(p.getId())) {
                 productDao.delete(p);

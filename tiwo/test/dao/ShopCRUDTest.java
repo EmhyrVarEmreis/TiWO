@@ -33,7 +33,37 @@ public class ShopCRUDTest extends AbstractCRUDTest {
     }
 
     @Override
-    public void saveListDeleteTest() {
+    public void saveListDeleteTest() throws CRUDOperationException {
+        int setSize = 2;
+
+        List<Shop> list = new ArrayList<>(3);
+        list.add(createObject());
+        list.add(createObject());
+        list.add(createObject());
+
+        Set<Product> products = createProducts(setSize);
+        for (Shop s : list) {
+            s.setProducts(products);
+        }
+
+        //Save list
+        List<Long> idList = shopDao.saveAll(list);
+
+        //Get list
+        List<Shop> listFromDb = shopDao.list();
+        assertEquals(list.size(), listFromDb.size());
+
+        //Delete list
+        for (Shop s : listFromDb) {
+            if (idList.contains(s.getId())) {
+                shopDao.delete(s);
+            }
+        }
+        Shop fromDb;
+        for (Long id : idList) {
+            fromDb = shopDao.get(id);
+            assertNull(fromDb);
+        }
     }
 
     @Override
