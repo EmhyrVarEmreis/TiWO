@@ -26,12 +26,12 @@ public abstract class AbstractCRUD<T> {
         factory = configuration.buildSessionFactory(ssrb.build());
     }
 
-    public ArrayList<Long> saveAll(List<T> list) throws CRUDOperationException {
-        ArrayList<Long> IdList= new ArrayList<Long>();
+    public LinkedList<Long> saveAll(List<T> list) throws CRUDOperationException {
+        LinkedList<Long> idList = new LinkedList<Long>();
         for (int i =0; i<list.size(); i++) {
-            IdList.add(save(list.get(i)));
+            idList.add(save(list.get(i)));
         }
-        return IdList;
+        return idList;
     }
     
     public Long save(T object) throws CRUDOperationException {
