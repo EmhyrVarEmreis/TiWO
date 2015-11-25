@@ -7,9 +7,11 @@ package dao;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import model.CRUDOperationException;
 import model.Product;
 import org.junit.Test;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,71 +33,60 @@ public class ProductCRUDtest extends AbstractCRUDTest {
 
         //Delete
         productDao.delete(fromDb);
-        fromDb = productDao.get(id);
-        assertNull(fromDb);
+        assertNull(productDao.get(id));
     }
 
     @Override
-    public void saveListDeleteTest() throws CRUDOperationException{
-       
-        List<Product> list = new LinkedList<Product>(); 
+    public void saveListDeleteTest() throws CRUDOperationException {
+
+        List<Product> list = new ArrayList<>(3);
         list.add(createObject());
         list.add(createObject());
         list.add(createObject());
-        
+
         //Save list   
-        LinkedList<Long> idList = new LinkedList<Long>();
-        idList = productDao.saveAll(list); 
+        List<Long> idList = productDao.saveAll(list);
 
         //Get list
-        List<Product> listFromDb = new LinkedList<Product>();
-        listFromDb = productDao.list();
-        
-        assertEquals(list.size()+5,listFromDb.size());
+        List<Product> listFromDb = productDao.list();
 
         //Delete list
-        for (Iterator<Product> iter = listFromDb.listIterator(); iter.hasNext();){
-            Product p = iter.next();
+        assertEquals(list.size(), listFromDb.size());
+        for (Product p : list) {
             if (idList.contains(p.getId())) {
                 productDao.delete(p);
             }
         }
-        Product fromDb;
-        for (int i=0; i<idList.size();i++){
-            fromDb = productDao.get(idList.get(i));
-            assertNull(fromDb);
-        }   
+
+        for (int i = 0; i < idList.size(); i++) {
+            assertNull(productDao.get(idList.get(i)));
+        }
     }
 
     @Override
-    public void saveUpdateGetDeleteTest()throws CRUDOperationException {
-        
+    public void saveUpdateGetDeleteTest() throws CRUDOperationException {
+
         //Save
         Product product = createObject();
-        Long id = productDao.save(product); 
-         
-       //Get
-        Product fromDb = productDao.get(id);
-        validate(product, fromDb);
-        
+        Long id = productDao.save(product);
+
+        //Get
+        validate(product, productDao.get(id));
+
         //Update
-        Product product2 = createObject();
-        product2.setName("Updated_name");
-        product2.setPrice(2.7);
-        product.setName("Updated_name");
-        product.setPrice(2.7);
-        productDao.update(product);
-        
+        Product newProduct = new Product();
+        newProduct.setId(product.getId());
+        newProduct.setName("Updated_name");
+        newProduct.setPrice(2.7);
+        productDao.update(newProduct);
+
         //Get after update
-        fromDb = productDao.get(id);
-        validate(product2, fromDb);
-        
+        Product fromDb = productDao.get(id);
+        validate(newProduct, fromDb);
+
         //Delete
         productDao.delete(fromDb);
-        fromDb = productDao.get(id);
-        
-        assertNull(fromDb);
-
+        assertNull(productDao.get(id));
     }
 
     protected Product createObject() {

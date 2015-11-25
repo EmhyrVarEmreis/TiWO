@@ -16,11 +16,6 @@ public class ShopCRUDTest extends AbstractCRUDTest {
     @Override
     public void saveGetDeleteTest() throws CRUDOperationException {
         int setSize = 2;
-        
-        List<Shop> list = new LinkedList<Shop>(); 
-        list.add(createObject());
-        list.add(createObject());
-        list.add(createObject());
 
         //Save
         Set<Product> products = createProducts(setSize);
@@ -34,83 +29,47 @@ public class ShopCRUDTest extends AbstractCRUDTest {
 
         //Delete
         shopDao.delete(fromDb);
-        fromDb = shopDao.get(id);
-        assertNull(fromDb);
+        assertNull(shopDao.get(id));
     }
 
     @Override
-    public void saveListDeleteTest() throws CRUDOperationException{
-        int setSize = 2;
-        
-        List<Shop> list = new LinkedList<Shop>(); 
-        list.add(createObject());
-        list.add(createObject());
-        list.add(createObject());
-        
-        Set<Product> products = createProducts(setSize);
-        for (Shop s : list){
-            s.setProducts(products);
-        }
-        
-        //Save list
-        LinkedList<Long> idList = new LinkedList<Long>();
-        idList = shopDao.saveAll(list); 
-        
-        //Get list
-        List<Shop> listFromDb = new LinkedList<Shop>();
-        listFromDb = shopDao.list();
-        
-        assertEquals(list.size()+2,listFromDb.size());
-  
-        //Delete list
-        for (Iterator<Shop> iter = listFromDb.listIterator(); iter.hasNext();){
-            Shop p = iter.next();
-            if (idList.contains(p.getId())) {
-                shopDao.delete(p);
-            }
-        }
-        Shop fromDb;
-        for (int i=0; i<idList.size();i++){
-            fromDb = shopDao.get(idList.get(i));
-            assertNull(fromDb);
-        }         
+    public void saveListDeleteTest() {
     }
 
     @Override
-    public void saveUpdateGetDeleteTest() throws CRUDOperationException{
+    public void saveUpdateGetDeleteTest() throws CRUDOperationException {
         int setSize = 2;
-        
+
         //Save
         Set<Product> products = createProducts(setSize);
         Shop shop = createObject();
         shop.setProducts(products);
         Long id = shopDao.save(shop);
-        
+
         //Get
         Shop fromDb = shopDao.get(id);
         validate(shop, fromDb);
-        
+
         //Update
         shop.setName("NewShopName");
-        for (Product P : products){
-            P.setName("New_name");
-            P.setPrice(2.7);
+        for (Product p : products) {
+            p.setName("New_name");
+            p.setPrice(2.7);
         }
         shop.setProducts(products);
         shopDao.update(shop);
-        
-        Shop shop2 = createObject();
-        shop2.setName("NewShopName");
-        shop2.setProducts(products);
-        
+
+        Shop newShop = createObject();
+        newShop.setName("NewShopName");
+        newShop.setProducts(products);
+
         //Get after update
         fromDb = shopDao.get(id);
-        validate(shop2,fromDb);
-           
+        validate(newShop, fromDb);
+
         //Delete
         shopDao.delete(fromDb);
-        fromDb = shopDao.get(id);
-        assertNull(fromDb);
+        assertNull(shopDao.get(id));
     }
 
     @Override
