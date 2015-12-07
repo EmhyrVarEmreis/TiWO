@@ -6,20 +6,17 @@
 package dao;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import model.CRUDOperationException;
 import model.Product;
 import org.junit.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class ProductCRUDtest extends AbstractCRUDTest {
 
-    private ProductDao productDao = new ProductDao();
 
     @Test
     public void saveGetDeleteTest() throws CRUDOperationException {

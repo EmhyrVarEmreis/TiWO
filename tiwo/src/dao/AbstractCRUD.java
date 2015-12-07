@@ -1,7 +1,5 @@
 package dao;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,8 +17,10 @@ public abstract class AbstractCRUD<T> {
     public AbstractCRUD() {
         Configuration configuration = new Configuration();
         configuration.configure("hibernate.cfg.xml");
-        configuration.addResource("product.hbm.xml");
         configuration.addResource("shop.hbm.xml");
+        configuration.addResource("product.hbm.xml");
+        configuration.addResource("shopping.history.hbm.xml");
+        configuration.addResource("user.hbm.xml");
 
         StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
         factory = configuration.buildSessionFactory(ssrb.build());
@@ -33,7 +33,7 @@ public abstract class AbstractCRUD<T> {
         }
         return idList;
     }
-    
+
     public Long save(T object) throws CRUDOperationException {
         Session session = factory.openSession();
         Transaction tx = null;
@@ -125,8 +125,14 @@ public abstract class AbstractCRUD<T> {
         return returned;
     }
 
+    public void deleteAll() throws CRUDOperationException {
+        List<T> objects = list();
+        for (T o : objects) {
+            delete(o);
+        }
+    }
+
     protected abstract String getListQuery();
 
     protected abstract Class getRequiredClass();
-
 }

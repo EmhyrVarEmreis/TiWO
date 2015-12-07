@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 
 public class ShopCRUDTest extends AbstractCRUDTest {
 
-    private ShopDao shopDao = new ShopDao();
 
     @Override
     public void saveGetDeleteTest() throws CRUDOperationException {

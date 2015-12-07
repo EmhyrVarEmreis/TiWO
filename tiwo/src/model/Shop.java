@@ -8,6 +8,14 @@ public class Shop {
     private String name;
     private Set<Product> products;
 
+    public Shop() {
+    }
+
+    public Shop(String name, Set<Product> products) {
+        this.name = name;
+        this.products = products;
+    }
+
     public Long getId() {
         return id;
     }
