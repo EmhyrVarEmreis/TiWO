@@ -2,12 +2,13 @@ package service;
 
 import model.Product;
 import model.User;
-
+import dao.ShoppingHistoryDao;
 import java.util.Date;
 import java.util.List;
+import model.CRUDOperationException;
+import model.ShoppingHistory;
 
 public interface StatisticsService {
-
     /**
      * Najlepiej sprzedace sie produkty w danym okresie (ilosc)
      * @param from
@@ -18,14 +19,14 @@ public interface StatisticsService {
     List<Product> getBestSellingProducts(Date from, Date to, int count);
 
     /**
-     * Najwiêcej wydajacy klienci
+     * Najwiï¿½cej wydajacy klienci
      * @param count
      * @return
      */
-    List<User> getBestBuyersByValue(int count);
+    List<User>  getBestBuyersByValue(int count);
 
     /**
-     * Najczêsciej kupujacy
+     * Najczï¿½sciej kupujacy
      * @param count
      * @return
      */

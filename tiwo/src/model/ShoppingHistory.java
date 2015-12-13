@@ -50,4 +50,7 @@ public class ShoppingHistory {
     public void setShop(Shop shop) {
         this.shop = shop;
     }
+    public String show() {
+        return buyTime.toString()+"-"+ shop.getName() +"-"+ user.getLogin() +"-"+ product.getName() +"-"+ product.getPrice();
+    }
 }
