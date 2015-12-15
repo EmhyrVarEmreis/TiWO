@@ -1,109 +1,88 @@
 package service;
 
-import java.util.Arrays;
 import model.Product;
 import model.User;
-import model.CRUDOperationException;
 
 import java.util.*;
+
 import model.ShoppingHistory;
 
 public class StatisticsServiceImpl implements StatisticsService {
-    public List<ShoppingHistory> list;
-    
+
+    private List<ShoppingHistory> list;
+
+    public StatisticsServiceImpl(List<ShoppingHistory> list) {
+        this.list = list;
+    }
+
     @Override
     public List<Product> getBestSellingProducts(Date from, Date to, int count) {
         throw new UnsupportedOperationException("Method not supported");
     }
 
     @Override
-    public List<User> getBestBuyersByValue(int count){
+    public List<User> getBestBuyersByValue(int count) {
 
-        if(count <= 0)
+        if (count <= 0)
             return null;
-        else if(count > list.size())
-            count = list.size();
-        boolean inMap = false;
-        Map<User, Double> hm= new HashMap<User, Double>();
-        for(int i = 0;i<list.size();i++)
-            System.out.println(list.get(i).getUser().getLogin());
-        
-        
-        for(int i =0;i < list.size();i++){
-            for (Map.Entry<User, Double> entry : hm.entrySet()) {
-                if(list.get(i).getUser().getLogin() == entry.getKey().getLogin() ){
-                    entry.setValue((double)entry.getValue()+ list.get(i).getProduct().getPrice());
-                    inMap = true;
-                }
+
+        HashMap<User, Double> hm = new HashMap();
+        for (ShoppingHistory shoppingHistory : list) {
+            System.out.println("Analyzing data for: " + shoppingHistory.getUser().getLogin());
+            User u = shoppingHistory.getUser();
+            if (hm.containsKey(u)) {
+                hm.put(u, hm.get(u) + shoppingHistory.getProduct().getPrice());
+            } else {
+                hm.put(u, shoppingHistory.getProduct().getPrice());
             }
-            if(inMap==false){
-                hm.put(list.get(i).getUser(), list.get(i).getProduct().getPrice());
-            }
-            inMap = false;
-                }
-        hm = sortByValues(hm);
-        for (Map.Entry<User, Double> entry : hm.entrySet()) {
-            System.out.println(entry.getKey() +" "+ entry.getValue());
         }
-        List<User> listEnd = new ArrayList<User>(hm.keySet());
-        while(listEnd.size() > count)
-        listEnd.remove(listEnd.size()-1);
-          
-        return listEnd;
+        return sortAndTransform(hm, count);
     }
 
     @Override
     public List<User> getBestBuyersByOperations(int count) {
-        if(count <= 0)
+        if (count <= 0)
             return null;
-        else if(count > list.size())
-            count = list.size();
-        boolean inMap = false;
-        Map<User, Integer> hm= new HashMap<User, Integer>();
-        for(int i = 0;i<list.size();i++)
-            System.out.println(list.get(i).getUser().getLogin());
-        
-        
-        for(int i =0;i < list.size();i++){
-            for (Map.Entry<User, Integer> entry : hm.entrySet()) {
-                if(list.get(i).getUser().getLogin() == entry.getKey().getLogin() ){
-                    entry.setValue((int)entry.getValue()+ 1);
-                    inMap = true;
-                }
-            }
-            if(inMap==false){
-                hm.put(list.get(i).getUser(), 1);
-            }
-            inMap = false;
-                }
-        hm = sortByValues(hm);
-        for (Map.Entry<User, Integer> entry : hm.entrySet()) {
-            System.out.println(entry.getKey() +" "+ entry.getValue());
-        }
-        List<User> listEnd = new ArrayList<User>(hm.keySet());
-        while(listEnd.size() > count)
-        listEnd.remove(listEnd.size()-1);
-          
-        return listEnd;
-    }
-       private static HashMap sortByValues(Map map) { 
-       List list = new LinkedList(map.entrySet());
-       // Defined Custom Comparator here
-       Collections.sort(list, new Comparator() {
-            public int compare(Object o1, Object o2) {
-               return ((Comparable) ((Map.Entry) (o2)).getValue())
-                  .compareTo(((Map.Entry) (o1)).getValue());
-            }
-       });
 
-       // Here I am copying the sorted list in HashMap
-       // using LinkedHashMap to preserve the insertion order
-       HashMap sortedHashMap = new LinkedHashMap();
-       for (Iterator it = list.iterator(); it.hasNext();) {
-              Map.Entry entry = (Map.Entry) it.next();
-              sortedHashMap.put(entry.getKey(), entry.getValue());
-       } 
-       return sortedHashMap;
-  }
-    
+        HashMap<User, Integer> hm = new HashMap();
+        for (ShoppingHistory shoppingHistory : list) {
+            System.out.println("Analyzing data for: " + shoppingHistory.getUser().getLogin());
+            User u = shoppingHistory.getUser();
+            if (hm.containsKey(u)) {
+                hm.put(u, hm.get(u) + 1);
+            } else {
+                hm.put(u, 1);
+            }
+        }
+        return sortAndTransform(hm, count);
+    }
+
+    private static List<User> sortAndTransform(HashMap<User, ? extends Comparable> hm, int count) {
+        hm = sortByValues(hm);
+        for (Map.Entry<User, ? extends Comparable> entry : hm.entrySet()) {
+            System.out.println("User:" + entry.getKey().getLogin() + " value: " + entry.getValue());
+        }
+        List<User> listEnd = new ArrayList(hm.keySet());
+        return listEnd.subList(0, count > listEnd.size() ? listEnd.size() : count);
+    }
+
+    private static HashMap sortByValues(HashMap<User, ? extends Comparable> map) {
+        List list = new LinkedList(map.entrySet());
+        // Defined Custom Comparator here
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((Comparable) ((Map.Entry) (o2)).getValue())
+                        .compareTo(((Map.Entry) (o1)).getValue());
+            }
+        });
+        // Here I am copying the sorted list in HashMap
+        // using LinkedHashMap to preserve the insertion order
+        HashMap sortedHashMap = new LinkedHashMap();
+        for (Iterator it = list.iterator(); it.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) it.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedHashMap;
+    }
+
 }
