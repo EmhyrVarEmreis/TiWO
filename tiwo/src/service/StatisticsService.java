@@ -2,11 +2,8 @@ package service;
 
 import model.Product;
 import model.User;
-import dao.ShoppingHistoryDao;
 import java.util.Date;
 import java.util.List;
-import model.CRUDOperationException;
-import model.ShoppingHistory;
 
 public interface StatisticsService {
     /**

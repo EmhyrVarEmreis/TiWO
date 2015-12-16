@@ -22,267 +22,106 @@
 \tableofcontents
 
 \section{Wstęp}
-Celem projektu byłu przetestowanie operacji CRUD (Create, Read, Update, Delete) w autorskiej aplikacji Java, porozumiewającej się z bazą danych MySQL przy pomocy frameworka Hibernate. Aplikacja przetwarza dane dotyczące sklepów i znajdujących się weń produktów.
+Celem projektu byłu stworzenie aplikacji z wykorzystaniem Test-driven development. Technika ta zaliczana jest do metodyk zwinnych. Charakterystyczna cecha dla tej techniki jest tworzenie testów przed właściwą implementacją.
+
+W projekcie rozwijaliśmy aplikację Java, porozumiewającą się z bazą danych, dodając do niej metody umożliwiające pobieranie danych statystycznych sprzedaży.
+
+\section{Nowe funkcjonalności}
+Nowe funkcjonalności reprezentowane są przez następujący interfejs:
+\begin{footnotesize}\begin{verbatim}
+    List<Product> getBestSellingProducts(Date from, Date to, int count);
+
+    List<User>  getBestBuyersByValue(int count);
+
+    List<User> getBestBuyersByOperations(int count);
+\end{verbatim}\end{footnotesize}
+
+Opis poszczególnych metod:
+
+\begin{itemize}
+	\item \textit{getBestSellingProducts} - najlepiej sprzedające się produkty w danym okresie. Przyjmowane parametry:
+		\begin{itemize}
+			\item[•] \textbf{from} - data początkowa
+			\item[•] \textbf{to} - data końcowa
+			\item[•] \textbf{count} - ilość 
+		\end{itemize}
+	\item \textit{getBestBuyersByValue} - najwięcej wydający klienci (według łącznie wydanej kwoty). Jedynym parametrem jest ilość klientów.
+	\item \textit{getBestBuyersByOperations} - najczęściej kupujący klienci (według ilości zakupionych produktów). Jedynym parametrem jest ilość klientów.
+\end{itemize}
+
 \section{Testy}
-\subsection{Plan testów}
-Testy miały obejmować zapis nowego obiektu w bazie danych, nadpisanie go, odczytanie i usunięcie. Należało zbadać działanie metod dla obydwu tabel - sklepów i produktów. Wykonano testy dla kilku klas równoważności a takeż ich kombinacji:
-\begin{itemize}
-  \item poprawne dane
-  \item dane o niepoprawnym typie
-  \item wartości skrajnie małe
-  \item wartości skrajnie duże
-\end{itemize}
 
-\subsection{Projekt i wykonanie testów}
-Utworzone zostały klasy testowe: ShopCRUDTest, ProductCRUDTest oraz klasa abstrakcyjna AbstractCRUDTest<T>. Jak można się domyślić dzięki przejrzysztości kodu, klasa ProductCRUDTest zawiera funkcje służące do testów obiektów i tabeli produktów. Testuje ona zatem klasy Product.java oraz ProductDao.java. Klasa ShopCRUDTest służy do testów sklepów. Testuje ona klasy Shop.java i ShopDao.java. Oczywiście, musi ona wykorzystywać także inne klasy - w założeniu sklep składa się z produktów. Jednak nie one stoją w tym wypadku w centrum zainteresowania.
-\subsubsection{Testy produktów - klasa ProductCRUDTest}
-\begin{itemize}
-    \item createObject - funkcja pomocnicza tworząca obiekty produktów
-    \begin{footnotesize}\begin{verbatim}
-    protected Product createObject() {
-        Product p = new Product();
-        p.setName("name");
-        p.setPrice(1.12);
-        return p;
-    }
-\end{verbatim}\end{footnotesize}
-    
-    
-    \item validate - funkcja pomocnicza porównująca produkt wyjściowy z zamierzonym. Używa funkcji assertEquals.
-    \begin{footnotesize}\begin{verbatim}
-private void validate(Product expected, Product acrual) {
-        assertEquals(expected.getName(), acrual.getName());
-        assertEquals(expected.getPrice(), acrual.getPrice());
-    }
-\end{verbatim}\end{footnotesize}
-    
-  \item saveGetDeleteTest - funkcja testująca. Tworzy nowy produkt i zapisuje go w bazie danych. Następnie wczytuje produkt z bazy danych i porównuje go z tym stworzonym na początku. Na koniec usuwa produkt z bazy danych i sprawdza czy próba wczytania go, zwróci NULL.
-  \begin{footnotesize}\begin{verbatim}
-@Test
-    public void saveGetDeleteTest() throws CRUDOperationException {
-        //Save
-        Product product = createObject();
-        Long id = productDao.save(product);
+W kolejnych sekcjach, umieszczone zostały opisy testów poszczególnych funkcjonalności.
 
-        //Get
-        Product fromDb = productDao.get(id);
-        validate(product, fromDb);
+\subsection{Test metody \textit{getBestBuyersByValue}}
 
-        //Delete
-        productDao.delete(fromDb);
-        assertNull(productDao.get(id));
-    }
-\end{verbatim}\end{footnotesize}
-\item saveListDeleteTest - Funkcja testująca. Tworzy, zapisuje, odczytuje a na końcu usuwa LISTY produktów.
-\begin{footnotesize}\begin{verbatim}
-@Override
-    public void saveListDeleteTest() throws CRUDOperationException {
+Opis: metoda testowa sprawdza czy zwracana lista użytkowników jest posortowana według ilości wydanej przez nich kwoty. Kolejno metoda sprawdza prawidłowość działania dla różnej ilości pobieranych użytkowników (w tym dla wartości skrajnych jak wartości ujemne oraz wartości bardzo duże, wykraczające poza rzeczywistą ilość użytkowników)
 
-        List<Product> list = new ArrayList<>(3);
-        list.add(createObject());
-        list.add(createObject());
-        list.add(createObject());
-
-        //Save list   
-        List<Long> idList = productDao.saveAll(list);
-
-        //Get list
-        List<Product> listFromDb = productDao.list();
-        assertEquals(list.size(), listFromDb.size());
-
-        //Delete list
-        for (Product p : list) {
-            if (idList.contains(p.getId())) {
-                productDao.delete(p);
-            }
-        }
-
-        for (int i = 0; i < idList.size(); i++) {
-            assertNull(productDao.get(idList.get(i)));
-        }
-    }
-\end{verbatim}\end{footnotesize}
-
-\item saveUpdateGetDeleteTest - Funkcja testująca. Tworzy produkt, zapisuje go w bazie danych i wczytuje. Porównuje wartość z początkową. Następnie tworzy nowy produkt o tym samym ID i nadpisuje stary produkt. Nstępnie znów wczytuje produkt z bazy i sprawdza czy jest to nowy. Usuwa produkt z bazy, sprawdza czy w tym miejscu występuje teraz NULL.
-\begin{footnotesize}\begin{verbatim}
-@Override
-    public void saveUpdateGetDeleteTest() throws CRUDOperationException {
-
-        //Save
-        Product product = createObject();
-        Long id = productDao.save(product);
-
-        //Get
-        validate(product, productDao.get(id));
-
-        //Update
-        Product newProduct = new Product();
-        newProduct.setId(product.getId());
-        newProduct.setName("Updated_name");
-        newProduct.setPrice(2.7);
-        productDao.update(newProduct);
-
-        //Get after update
-        Product fromDb = productDao.get(id);
-        validate(newProduct, fromDb);
-
-        //Delete
-        productDao.delete(fromDb);
-        assertNull(productDao.get(id));
-    }
-\end{verbatim}\end{footnotesize}
-\end{itemize}
-
-
-\subsubsection{Testy produktów - klasa ProductCRUDTest}
-\begin{itemize}
-\item createObject - funkcja pomocnicza tworząca nowy, pusty sklep.
+Kod:
 \begin{footnotesize}\begin{verbatim}
     @Override
-    protected Shop createObject() {
-        Shop shop = new Shop();
-        shop.setName("shopName");
-        return shop;
+    public void getBestBuyersByValueTest() throws CRUDOperationException {
+        List<ShoppingHistory> list = new LinkedList<ShoppingHistory>();
+        User u = new User("Bogdan");
+        list.add(createObject(u, "b1", "productName", 1));
+        list.add(createObject(u, "b2", "ProductName", 120.12));
+        list.add(createObject(u, "b2", "ProductName", 70.75));
+        list.add(createObject(new User("Adam"), "b2", "ProductName", 25.5));
+        list.add(createObject(new User("Zyta"), "b2", "ProductName", 0));
+        u = new User("Marta");
+        list.add(createObject(u, "b2", "ProductName", 9.99));
+        list.add(createObject(u, "b2", "ProductName", 12.59));
+
+        StatisticsServiceImpl stat = new StatisticsServiceImpl(list);
+        //Oczekiwane wyniki to: Bogdan->Adam->Marta->Zyta
+        //Dla 0 metoda ma zwracać null, dla arg. wiekszego od historii zakupów - posortowana calosc
+        List<User> list1 = new LinkedList(Arrays.asList(list.get(0).getUser()));
+        assertEquals(list1, stat.getBestBuyersByValue(1));
+        list1.add(list.get(3).getUser());
+        assertEquals(list1, stat.getBestBuyersByValue(2));
+        assertNull(stat.getBestBuyersByValue(0));
+        list1.add(list.get(5).getUser());
+        list1.add(list.get(4).getUser());
+        assertEquals(list1, stat.getBestBuyersByValue(100));
     }
 \end{verbatim}\end{footnotesize}
-\item validate - funkcja pomocnicza, porównująca sklep wyjściowy z zamierzonym. Używa metody assertEquals. 
+
+\subsection{Test metody \textit{getBestBuyersByOperations}}
+
+Opis: metoda testowa sprawdza czy zwracana lista użytkowników jest posortowana według ilości zakupionych przez nich produktów. Kolejno metoda sprawdza prawidłowość działania dla różnej ilości pobieranych użytkowników (w tym dla wartości skrajnych jak wartości ujemne oraz wartości bardzo duże, wykraczające poza rzeczywistą ilość użytkowników)
+
+Kod:
 \begin{footnotesize}\begin{verbatim}
-   private void validate(Shop expected, Shop actual) {
-        assertEquals(expected.getName(), actual.getName());
-        assertEquals(expected.getProducts().size(), actual.getProducts().size());
+	@Override
+    public void getBestBuyersByOperationsTest() throws CRUDOperationException {
+        List<ShoppingHistory> list = new LinkedList();
+        User u = new User("Marta");
+        list.add(createObject(u, "b1", "productName", 1));
+        list.add(createObject(u, "b2", "ProductName", 12.59));
+        list.add(createObject(u, "b2", "ProductName", 9.99));
+        u = new User("Adam");
+        list.add(createObject(u, "b2", "ProductName", 25.5));
+        list.add(createObject(u, "b2", "ProductName", 70.75));
+        list.add(createObject(new User("Bogdan"), "b2", "ProductName", 120.12));
+        list.add(createObject(new User("Zyta"), "b2", "ProductName", 0));
+
+        StatisticsServiceImpl stat = new StatisticsServiceImpl(list);
+        //Oczekiwane wyniki to: Marta -> Adam -> Bogdan/Zyta
+        List<User> list1 = new LinkedList();
+        assertEquals(list1, stat.getBestBuyersByValue(0));
+        assertEquals(list1, stat.getBestBuyersByValue(-10));
+        list1.add(list.get(0).getUser());
+        assertEquals(list1, stat.getBestBuyersByOperations(1));
+        list1.add(list.get(3).getUser());
+        assertEquals(list1, stat.getBestBuyersByOperations(2));
+        list1.add(list.get(5).getUser());
+        list1.add(list.get(6).getUser());
+        assertEquals(list1, stat.getBestBuyersByOperations(100));
     }
 \end{verbatim}\end{footnotesize}
-\item createProducts - funkcja pomocnicza, tworzy kolekcję Set, zawierającą i produktów, które później będa mogły zapełnić sklep.
-\begin{footnotesize}\begin{verbatim}
-    private Set<Product> createProducts(int size) {
-        Set<Product> products = new HashSet();
-        for (int i = 0; i < size; i++) {
-            Product p = new Product();
-            p.setName("name");
-            p.setPrice(1.3);
-            products.add(p);
-        }
-        return products;
-    }
-\end{verbatim}\end{footnotesize}
-\item saveGetDeleteTest - Funkcja testująca. Tworzy kolekcję produktów i sklep. Dodaje produkty do sklepu, a nastepnie zapisuje go w bazie danych. Wczytuje sklep z bazy danych i porównuje go z tym stworzonym na pczątku. Usuwa sklep z bazy danych i sprawdza czy na danym miejscu znajduje się NULL.
-\begin{footnotesize}\begin{verbatim}
-@Override
-    public void saveGetDeleteTest() throws CRUDOperationException {
-        int setSize = 2;
-
-        //Save
-        Set<Product> products = createProducts(setSize);
-        Shop shop = createObject();
-        shop.setProducts(products);
-        Long id = shopDao.save(shop);
-
-        //Get
-        Shop fromDb = shopDao.get(id);
-        validate(shop, fromDb);
-
-        //Delete
-        shopDao.delete(fromDb);
-        assertNull(shopDao.get(id));
-    }
-\end{verbatim}\end{footnotesize}
-\item saveListDeleteTest - Funkcja testująca. Tworzy, zapisuje, odczytuje a na końcu usuwa LISTY sklepów.
-\begin{footnotesize}\begin{verbatim}
-    @Override
-    public void saveListDeleteTest() throws CRUDOperationException {
-        int setSize = 2;
-
-        List<Shop> list = new ArrayList<>(3);
-        list.add(createObject());
-        list.add(createObject());
-        list.add(createObject());
-
-        Set<Product> products = createProducts(setSize);
-        for (Shop s : list) {
-            s.setProducts(products);
-        }
-
-        //Save list
-        List<Long> idList = shopDao.saveAll(list);
-
-        //Get list
-        List<Shop> listFromDb = shopDao.list();
-        assertEquals(list.size(), listFromDb.size());
-
-        //Delete list
-        for (Shop s : listFromDb) {
-            if (idList.contains(s.getId())) {
-                shopDao.delete(s);
-            }
-        }
-        Shop fromDb;
-        for (Long id : idList) {
-            fromDb = shopDao.get(id);
-            assertNull(fromDb);
-        }
-    }
-\end{verbatim}\end{footnotesize}
-
-\item saveUpdateGetDeleteTest - Funkcja testująca. Tworzy sklep, kolekcję produktów i dodaje produkty do sklepu.  Zapisuje go w bazie danych i wczytuje. Porównuje wartość z początkową. Następnie zmienia dane sklepu, pozostawiając to samo ID i nadpisuje stary sklep. Następnie znów wczytuje produkt z bazy i sprawdza czy jest to nowy. Usuwa produkt z bazy, sprawdza czy w tym miejscu występuje teraz NULL.
-\begin{footnotesize}\begin{verbatim}
- @Override
-    public void saveUpdateGetDeleteTest() throws CRUDOperationException {
-        int setSize = 2;
-
-        //Save
-        Set<Product> products = createProducts(setSize);
-        Shop shop = createObject();
-        shop.setProducts(products);
-        Long id = shopDao.save(shop);
-
-        //Get
-        Shop fromDb = shopDao.get(id);
-        validate(shop, fromDb);
-
-        //Update
-        shop.setName("NewShopName");
-        for (Product p : products) {
-            p.setName("New_name");
-            p.setPrice(2.7);
-        }
-        shop.setProducts(products);
-        shopDao.update(shop);
-
-        Shop newShop = createObject();
-        newShop.setName("NewShopName");
-        newShop.setProducts(products);
-
-        //Get after update
-        fromDb = shopDao.get(id);
-        validate(newShop, fromDb);
-
-        //Delete
-        shopDao.delete(fromDb);
-        assertNull(shopDao.get(id));
-    }
-\end{verbatim}\end{footnotesize}
-\end{itemize}
-\subsubsection{Wyjątek testowy}
-Na potrzeby testów został zdefiniowany nowy wyjątek który jest zgłaszany przez funkcje testowe w wypadku błędu:
-\begin{footnotesize}\begin{verbatim}
-package model;
-
-public class CRUDOperationException extends Exception {
-
-    public CRUDOperationException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
-}
-\end{verbatim}\end{footnotesize}
-\subsubsection{Pokrycie klas równoważności.}
-\begin{itemize}
-  \item poprawne dane - Nazwa produktu to string długości kilku, kilkunastu znaków. Cena produktu to double z przedziału 1-9999. Nazwa sklepu to string długości kilku, kilkunastu znaków. kolekcja produktów - j.w. Testy wypadły pozytywnie.
-  \item dane o niepoprawnym typie - Nazwa produktu i sklepu to np. integer. Cena produktu to np. string. Wszystkie testy zwróciły błąd.
-  \item wartości skrajnie małe - Puste nazwy produktu i sklepu, ceny równe 0. Nazwa sklepu o zerowej długości nie wywołuje błędu. Ceny produktów równe 0 wywołują błąd, tak samo jak zastosowanie typu integer zamiast double - testy wyłącznie przechodza liczby wpisane w formie "1.0" a nie "1".
-  \item wartości skrajnie duże - Nazwy produktu i sklepu to stringi długości rzędu 1000 znaków. Ceny wykraczają poza zakres typu double. Skrajnie długie nazwy spowodowały błąd. Ceny przekraczające Double.MAX_VALUE nie spowodowały błędu - wartości "zawijają" się z powrotem na początek przedziału.
-\end{itemize}
 
 \section{Wnioski}
-Testy wykazały poprawność działania programu przy standardowych, zamierzonych przypadkach użycia. Testy wykazały braki w konwersji typów. Być może warto o niej pomysleć? Proszę o dodanie automatycznej kowersji między typami string a double, a także dodanie obsługi typu integer. Testy dla skrajnych wartości częściowo powodują błędy. Proszę zwrócić uwagę na ich odpowiednią obsługę, jak chociażby informację zwrotną dla użytkownika.
+Testy wykazały poprawność działania programu przy standardowych, zamierzonych przypadkach użycia.
 
+Test driven development daje większą gwarancję poprawnego działania aplikacji, dzięki konieczności pisania testów już na samym początku implementacji nowych funkcjonalności.
 \end{document}

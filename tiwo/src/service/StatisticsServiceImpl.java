@@ -24,7 +24,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     public List<User> getBestBuyersByValue(int count) {
 
         if (count <= 0)
-            return null;
+            return new LinkedList<>();
 
         HashMap<User, Double> hm = new HashMap();
         for (ShoppingHistory shoppingHistory : list) {
@@ -42,7 +42,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Override
     public List<User> getBestBuyersByOperations(int count) {
         if (count <= 0)
-            return null;
+            return new LinkedList<>();
 
         HashMap<User, Integer> hm = new HashMap();
         for (ShoppingHistory shoppingHistory : list) {

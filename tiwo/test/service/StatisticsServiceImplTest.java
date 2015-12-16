@@ -46,21 +46,22 @@ public class StatisticsServiceImplTest extends AbstractStatisticsServiceTest {
 
         StatisticsServiceImpl stat = new StatisticsServiceImpl(list);
         //Oczekiwane wyniki to: Bogdan->Adam->Marta->Zyta
-        //Dla 0 metoda ma zwracać null, dla arg. wiekszego od historii zakupów - posortowana calosc
-        List<User> list1 = new LinkedList<User>(Arrays.asList(list.get(0).getUser()));
+        List<User> list1 = new LinkedList();
+        assertEquals(list1, stat.getBestBuyersByValue(0));
+        assertEquals(list1, stat.getBestBuyersByValue(-10));
+        assertEquals(list1, stat.getBestBuyersByValue(0));
+        list1.add(list.get(0).getUser());
         assertEquals(list1, stat.getBestBuyersByValue(1));
         list1.add(list.get(3).getUser());
         assertEquals(list1, stat.getBestBuyersByValue(2));
-        assertNull(stat.getBestBuyersByValue(0));
         list1.add(list.get(5).getUser());
         list1.add(list.get(4).getUser());
         assertEquals(list1, stat.getBestBuyersByValue(100));
-
     }
 
     @Override
     public void getBestBuyersByOperationsTest() throws CRUDOperationException {
-        List<ShoppingHistory> list = new LinkedList<ShoppingHistory>();
+        List<ShoppingHistory> list = new LinkedList();
         User u = new User("Marta");
         list.add(createObject(u, "b1", "productName", 1));
         list.add(createObject(u, "b2", "ProductName", 12.59));
@@ -73,12 +74,13 @@ public class StatisticsServiceImplTest extends AbstractStatisticsServiceTest {
 
         StatisticsServiceImpl stat = new StatisticsServiceImpl(list);
         //Oczekiwane wyniki to: Marta -> Adam -> Bogdan/Zyta
-        //Dla 0 metoda ma zwracać null, dla arg. wiekszego od historii zakupów - posortowana calosc
-        List<User> list1 = new LinkedList(Arrays.asList(list.get(0).getUser()));
+        List<User> list1 = new LinkedList();
+        assertEquals(list1, stat.getBestBuyersByValue(0));
+        assertEquals(list1, stat.getBestBuyersByValue(-10));
+        list1.add(list.get(0).getUser());
         assertEquals(list1, stat.getBestBuyersByOperations(1));
         list1.add(list.get(3).getUser());
         assertEquals(list1, stat.getBestBuyersByOperations(2));
-        assertNull(stat.getBestBuyersByOperations(0));
         list1.add(list.get(5).getUser());
         list1.add(list.get(6).getUser());
         assertEquals(list1, stat.getBestBuyersByOperations(100));
